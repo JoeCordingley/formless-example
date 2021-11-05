@@ -35,7 +35,7 @@ derive instance newtypeDogForm :: Newtype (DogForm r f) _
 
 input :: forall m. Monad m => F.Input' DogForm m
 input =
-  { initialInputs: Nothing -- same as: Just (F.wrapInputFields { name: "", age: "" })
+  { initialInputs: Just (F.wrapInputFields { name: "name", age: "5" })
   , validators: DogForm
       { name: F.noValidation
       , age: F.hoistFnE_ \str -> case Int.fromString str of
@@ -51,14 +51,12 @@ spec :: forall input m. Monad m => F.Spec' DogForm Dog input m
 spec = F.defaultSpec { render = render, handleEvent = F.raiseResult }
   where
   render st@{ form } =
-    HH.form_
+    HH.div_
       [ HH.input
-          [ HP.value $ F.getInput _name form
-          , HE.onValueInput $ F.set _name
+          [ HE.onValueInput $ F.set _name
           ]
       , HH.input
-          [ HP.value $ F.getInput _age form
-          , HE.onValueInput $ F.setValidate _age
+          [ HE.onValueInput $ F.setValidate _age
           ]
       , HH.text case F.getError _age form of
           Nothing -> ""
